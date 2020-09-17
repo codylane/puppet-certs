@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'rspec-puppet-utils'
 
 describe 'certs::vhost' do
   let(:pre_condition) do
@@ -78,19 +77,26 @@ describe 'certs::vhost' do
     end
 
     before :each do
-      MockFunction.new('vault_lookup') do |f|
-        f.stubbed.returns(crt: '-----BEGIN CERTIFICATE-----\nTEST\n-----END CERTIFICATE-----', key: '-----BEGIN PRIVATE KEY-----\nTEST\n-----END PRIVATE KEY-----')
+
+      Puppet::Parser::Functions.newfunction(:vault_lookup, :type => :rvalue) do |args|
+        {
+          crt: '-----BEGIN CERTIFICATE-----\nTEST\n-----END CERTIFICATE-----',
+          key: '-----BEGIN PRIVATE KEY-----\nTEST\n-----END PRIVATE KEY-----'
+        }
       end
+
     end
+
     it { pp catalogue.resources }
+
     it {
       is_expected.to contain_file('www.example.com.crt').with(path: '/etc/ssl/certs/www.example.com.crt',
-                                                              content: expected_content[:crt],
+                                                              content: '-----BEGIN CERTIFICATE-----\nTEST\n-----END CERTIFICATE-----',
                                                               notify: 'Service[httpd]')
     }
     it {
       is_expected.to contain_file('www.example.com.key').with(path: '/etc/ssl/certs/www.example.com.key',
-                                                              content: expected_content[:key],
+                                                              content: '-----BEGIN PRIVATE KEY-----\nTEST\n-----END PRIVATE KEY-----',
                                                               notify: 'Service[httpd]')
     }
 

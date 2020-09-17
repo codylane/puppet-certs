@@ -20,6 +20,7 @@ clean:
 	rm -f Gemfile.lock
 	rm -rf .bundle/gems
 	rm -rf vendor/*
+	rm -rf spec/fixtures/modules/*
 
 
 verify:

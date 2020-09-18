@@ -13,6 +13,7 @@ all: verify clean bundle
 
 bundle:
 	bundle config set path $(BUNDLE_PATH)
+	bundle install
 	pdk $(PDK_DEBUG) bundle install
 
 
